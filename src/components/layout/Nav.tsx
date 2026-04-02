@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { href: "/course", label: "Course" },
   { href: "/newsletter", label: "Newsletter" },
   { href: "/blog", label: "Blog" },
+  { href: "/about", label: "About" },
 ];
 
 export default function Nav() {

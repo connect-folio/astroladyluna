@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import HeroGlow from "@/components/sections/HeroGlow";
 import HeroEntrance from "@/components/sections/HeroEntrance";
 import NewsletterInlineForm from "@/components/sections/NewsletterInlineForm";
+import PhotoCarousel from "@/components/sections/PhotoCarousel";
 import FadeUp from "@/components/ui/FadeUp";
 import { personSchema } from "@/lib/jsonld";
 
@@ -85,37 +87,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Section 3: About strip ── */}
-      <section className="bg-plum py-16 px-6 md:px-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <FadeUp delay={0}>
-            <blockquote className="font-display text-3xl text-cream italic leading-snug">
+      {/* ── Section 3: Photo carousel ── */}
+      <section className="w-full bg-cream">
+        <PhotoCarousel />
+      </section>
+
+      {/* ── Section 4: About strip with featured photo ── */}
+      <section className="bg-plum">
+        <div className="max-w-none grid grid-cols-1 md:grid-cols-[60%_40%]">
+          {/* Left — featured photo */}
+          <FadeUp delay={0} className="relative h-[400px] md:h-[500px] overflow-hidden">
+            <Image
+              src="/images/lady-luna-mysterious.jpeg"
+              alt="Camila, Lady Luna"
+              fill
+              className="object-cover object-top"
+              sizes="(max-width: 768px) 100vw, 60vw"
+            />
+          </FadeUp>
+
+          {/* Right — bio */}
+          <FadeUp delay={0.15} className="flex flex-col justify-center p-10 md:p-12">
+            <p className="font-body text-xs tracking-widest text-rose uppercase mb-4">
+              ABOUT
+            </p>
+            <blockquote className="font-display text-3xl text-cream italic leading-snug mb-6">
               &ldquo;The stars don&apos;t control you. They help you understand
               yourself.&rdquo;
             </blockquote>
-          </FadeUp>
-          <FadeUp delay={0.15}>
-            <div className="flex flex-col gap-4">
-              <p className="font-body text-sm text-lavender leading-relaxed">
-                I&apos;m Camila — Lady Luna. I&apos;ve spent years studying the
-                language of the cosmos so I can help you decode yours. Whether
-                you&apos;re seeking clarity, direction, or simply want to
-                understand yourself more deeply, the chart is the map.
-              </p>
+            <p className="font-body text-sm text-lavender leading-relaxed mb-6">
+              I&apos;m Camila — Lady Luna. I&apos;ve spent years studying the
+              language of the cosmos so I can help you decode yours. Whether
+              you&apos;re seeking clarity, direction, or simply want to
+              understand yourself more deeply, the chart is the map.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/session"
+                className="font-body text-sm text-rose hover:text-cream transition-colors"
+              >
+                Book a Session →
+              </Link>
               <Link
                 href="https://instagram.com/ladyluna.1111"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-xs tracking-widest text-mauve hover:text-lavender transition-colors uppercase"
+                className="font-body text-xs text-mauve hover:text-lavender transition-colors"
               >
-                Follow along @ladyluna.1111
+                @ladyluna.1111 on Instagram ↗
               </Link>
             </div>
           </FadeUp>
         </div>
       </section>
 
-      {/* ── Section 4: Newsletter inline CTA ── */}
+      {/* ── Section 5: Newsletter inline CTA ── */}
       <section className="bg-rose/20 py-16 px-6">
         <div className="max-w-md mx-auto flex flex-col items-center gap-4 text-center">
           <h2 className="font-display text-4xl text-plum">
