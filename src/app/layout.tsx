@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Raleway, Cormorant_Garamond } from "next/font/google";
-import { cookies } from "next/headers";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
-import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
 const raleway = Raleway({
@@ -43,27 +41,22 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const defaultLang = cookieStore.get("ll_lang")?.value ?? "en";
-
   return (
     <html
-      lang={defaultLang}
+      lang="es"
       className={`${raleway.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <LanguageProvider defaultLang={defaultLang}>
-          <div className="min-h-screen flex flex-col">
-            <Nav />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </LanguageProvider>
+        <div className="min-h-screen flex flex-col">
+          <Nav />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
