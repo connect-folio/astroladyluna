@@ -1,47 +1,66 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 
-type Lang = "en" | "es";
+export type Lang = "en" | "es";
 
-interface LanguageContextValue {
-  lang: Lang;
-  toggle: () => void;
+// ─── Module-level store ──────────────────────────────────────────────────────
+// A single module instance is guaranteed by the bundler, so every component
+// that calls useLanguage() shares the same _lang variable and listener set —
+// no React context boundary issues.
+
+let _lang: Lang = "en";
+
+// Initialize synchronously from localStorage on first module load (client only).
+// Runs before any component renders, so there is no flash of wrong language.
+if (typeof window !== "undefined") {
+  try {
+    const stored = localStorage.getItem("ll_lang");
+    if (stored === "es") _lang = "es";
+  } catch {}
 }
 
-const LanguageContext = createContext<LanguageContextValue>({
-  lang: "en",
-  toggle: () => {},
-});
+const _listeners = new Set<() => void>();
 
-export function LanguageProvider({
-  defaultLang = "en",
-  children,
-}: {
-  defaultLang?: string;
-  children: React.ReactNode;
-}) {
-  const initial: Lang = defaultLang === "es" ? "es" : "en";
-  const [lang, setLang] = useState<Lang>(initial);
+function getLang(): Lang {
+  return _lang;
+}
+
+function setLang(next: Lang): void {
+  if (_lang === next) return;
+  _lang = next;
+  // Update <html lang="..."> in place so screen readers pick it up immediately
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = next;
+  }
+  _listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void): () => void {
+  _listeners.add(listener);
+  return () => _listeners.delete(listener);
+}
+
+// Server snapshot always returns "en" — the server has no access to localStorage.
+// After hydration, useSyncExternalStore will synchronously reconcile with the
+// real client value before the browser paints.
+function getServerSnapshot(): Lang {
+  return "en";
+}
+
+// ─── Hook ────────────────────────────────────────────────────────────────────
+
+export function useLanguage() {
+  const lang = useSyncExternalStore(subscribe, getLang, getServerSnapshot);
 
   const toggle = useCallback(() => {
-    setLang((prev) => {
-      const next: Lang = prev === "en" ? "es" : "en";
-      try {
-        localStorage.setItem("ll_lang", next);
-      } catch {}
-      document.cookie = `ll_lang=${next}; path=/; max-age=31536000; SameSite=Lax`;
-      return next;
-    });
+    const next: Lang = _lang === "en" ? "es" : "en";
+    setLang(next);
+    try {
+      localStorage.setItem("ll_lang", next);
+    } catch {}
+    document.cookie = `ll_lang=${next}; path=/; max-age=31536000; SameSite=Lax`;
   }, []);
 
-  return (
-    <LanguageContext.Provider value={{ lang, toggle }}>
-      {children}
-    </LanguageContext.Provider>
-  );
-}
-
-export function useLanguage(): LanguageContextValue {
-  return useContext(LanguageContext);
+  return { lang, toggle };
 }
