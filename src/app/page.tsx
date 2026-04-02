@@ -1,65 +1,137 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import HeroGlow from "@/components/sections/HeroGlow";
+import HeroEntrance from "@/components/sections/HeroEntrance";
+import NewsletterInlineForm from "@/components/sections/NewsletterInlineForm";
+import FadeUp from "@/components/ui/FadeUp";
+import { personSchema } from "@/lib/jsonld";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Lady Luna — Guía Astrológica",
+  description:
+    "Astrology readings, courses, and weekly cosmic guidance by Camila, Lady Luna. Book a personal session, join the course waitlist, or subscribe to The Lady Luna Letter.",
+  openGraph: {
+    images: [{ url: "/og?title=Lady+Luna&subtitle=Guía+Astrológica", width: 1200, height: 630 }],
+  },
+};
+
+const products = [
+  {
+    tag: "PERSONAL READING",
+    title: "Book a Session",
+    body: "A one-on-one reading tailored to your chart. Three formats available — from a free quick connect to a deep 80-minute exploration.",
+    price: "From free · $111",
+    cta: "Explore Sessions →",
+    href: "/session",
+  },
+  {
+    tag: "SELF-STUDY",
+    title: "Learn to Read the Stars",
+    body: "A self-paced video course on tarot and astrology fundamentals. Launching June 1, 2026.",
+    price: "From $200 · Early access available",
+    cta: "Join the Waitlist →",
+    href: "/course",
+  },
+  {
+    tag: "WEEKLY LETTERS",
+    title: "The Lady Luna Letter",
+    body: "Weekly cosmic guidance delivered to your inbox. Four issues free, then $17/month.",
+    price: "Free to start · $17/mo",
+    cta: "Subscribe Free →",
+    href: "/newsletter",
+  },
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema()) }}
+      />
+
+      {/* ── Section 1: Hero ── */}
+      <section className="relative flex min-h-screen flex-col items-center justify-center bg-plum px-6 text-center">
+        <HeroGlow />
+        <HeroEntrance />
+      </section>
+
+      {/* ── Section 2: Products ── */}
+      <section className="bg-cream py-24 px-6 md:px-16">
+        <p className="font-body text-xs tracking-[0.4em] text-mauve uppercase mb-12 text-center">
+          WHAT I OFFER
+        </p>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          {products.map((p, i) => (
+            <FadeUp key={p.href} delay={i * 0.1}>
+              <div className="border border-plum/10 rounded-none p-8 flex flex-col gap-4 hover:shadow-md transition-shadow h-full">
+                <span className="font-body text-xs tracking-[0.3em] text-mauve uppercase">
+                  {p.tag}
+                </span>
+                <h2 className="font-display text-2xl text-plum">{p.title}</h2>
+                <p className="font-body text-sm text-plum/70 flex-1 leading-relaxed">
+                  {p.body}
+                </p>
+                <p className="font-body text-sm text-mauve">{p.price}</p>
+                <Link
+                  href={p.href}
+                  className="font-body text-xs tracking-widest text-plum hover:text-mauve transition-colors mt-auto"
+                >
+                  {p.cta}
+                </Link>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Section 3: About strip ── */}
+      <section className="bg-plum py-16 px-6 md:px-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <FadeUp delay={0}>
+            <blockquote className="font-display text-3xl text-cream italic leading-snug">
+              &ldquo;The stars don&apos;t control you. They help you understand
+              yourself.&rdquo;
+            </blockquote>
+          </FadeUp>
+          <FadeUp delay={0.15}>
+            <div className="flex flex-col gap-4">
+              <p className="font-body text-sm text-lavender leading-relaxed">
+                I&apos;m Camila — Lady Luna. I&apos;ve spent years studying the
+                language of the cosmos so I can help you decode yours. Whether
+                you&apos;re seeking clarity, direction, or simply want to
+                understand yourself more deeply, the chart is the map.
+              </p>
+              <Link
+                href="https://instagram.com/ladyluna.1111"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body text-xs tracking-widest text-mauve hover:text-lavender transition-colors uppercase"
+              >
+                Follow along @ladyluna.1111
+              </Link>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ── Section 4: Newsletter inline CTA ── */}
+      <section className="bg-rose/20 py-16 px-6">
+        <div className="max-w-md mx-auto flex flex-col items-center gap-4 text-center">
+          <h2 className="font-display text-4xl text-plum">
+            Start with 4 free issues
+          </h2>
+          <p className="font-body text-sm text-mauve">
+            No credit card. Just your email.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+          <div className="w-full mt-2">
+            <NewsletterInlineForm
+              variant="dark"
+              buttonLabel="Subscribe Free"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
