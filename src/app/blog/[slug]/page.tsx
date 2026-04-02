@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { compileMDX } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -17,14 +18,15 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-function getPostSource(slug: string): string | null {
-  const filePath = path.join(
-    process.cwd(),
-    "src/content/blog",
-    `${slug}.mdx`
-  );
-  if (!fs.existsSync(filePath)) return null;
-  return fs.readFileSync(filePath, "utf-8");
+function getPostSource(slug: string, lang = "en"): string | null {
+  const contentDir = path.join(process.cwd(), "src/content/blog");
+  if (lang === "es") {
+    const esPath = path.join(contentDir, `${slug}.es.mdx`);
+    if (fs.existsSync(esPath)) return fs.readFileSync(esPath, "utf-8");
+  }
+  const defaultPath = path.join(contentDir, `${slug}.mdx`);
+  if (!fs.existsSync(defaultPath)) return null;
+  return fs.readFileSync(defaultPath, "utf-8");
 }
 
 export async function generateStaticParams() {
@@ -32,7 +34,7 @@ export async function generateStaticParams() {
   if (!fs.existsSync(contentDir)) return [];
   return fs
     .readdirSync(contentDir)
-    .filter((f) => f.endsWith(".mdx"))
+    .filter((f) => f.endsWith(".mdx") && !f.includes(".es."))
     .map((f) => ({ slug: f.replace(".mdx", "") }));
 }
 
@@ -61,7 +63,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const source = getPostSource(slug);
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("ll_lang")?.value === "es" ? "es" : "en";
+
+  const source = getPostSource(slug, lang);
   if (!source) notFound();
 
   const { content, frontmatter } = await compileMDX<Frontmatter>({
@@ -74,6 +79,9 @@ export default async function BlogPostPage({ params }: Props) {
     date: frontmatter.date,
     excerpt: frontmatter.excerpt,
   });
+
+  const writtenBy = lang === "es" ? "Escrito por Lady Luna" : "Written by Lady Luna";
+  const bookSessionLabel = lang === "es" ? "Reserva una Sesión →" : "Book a Session →";
 
   return (
     <>
@@ -107,14 +115,12 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* ── Footer ── */}
         <div className="max-w-2xl mx-auto mt-16 pt-8 border-t border-plum/10 flex items-center justify-between">
-          <p className="font-body text-xs text-mauve">
-            Written by Lady Luna
-          </p>
+          <p className="font-body text-xs text-mauve">{writtenBy}</p>
           <Link
             href="/session"
             className="font-body text-xs tracking-widest uppercase text-plum border border-plum/30 px-5 py-2 hover:bg-plum hover:text-cream transition-colors"
           >
-            Book a Session →
+            {bookSessionLabel}
           </Link>
         </div>
       </section>

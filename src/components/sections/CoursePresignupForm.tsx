@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
 export default function CoursePresignupForm() {
   const [name, setName] = useState("");
@@ -12,6 +14,8 @@ export default function CoursePresignupForm() {
     early_bird: boolean;
   } | null>(null);
   const [error, setError] = useState("");
+  const { lang } = useLanguage();
+  const t = translations[lang].course;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +31,7 @@ export default function CoursePresignupForm() {
       const data = await res.json();
       setResult(data);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t.error);
     } finally {
       setLoading(false);
     }
@@ -36,9 +40,7 @@ export default function CoursePresignupForm() {
   if (result) {
     return (
       <p className="font-body text-sm text-lavender leading-relaxed max-w-md">
-        {result.early_bird
-          ? "You're in. Since you signed up before May 15, you'll receive a free 20-minute Quick Connect session with Lady Luna. Check your email."
-          : "You're on the list. We'll email you when the course launches June 1."}
+        {result.early_bird ? t.confirmEarlyBird : t.confirmNormal}
       </p>
     );
   }
@@ -47,7 +49,7 @@ export default function CoursePresignupForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-md">
       <Input
         type="text"
-        placeholder="Your name"
+        placeholder={t.namePlaceholder}
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
@@ -55,7 +57,7 @@ export default function CoursePresignupForm() {
       />
       <Input
         type="email"
-        placeholder="Your email"
+        placeholder={t.emailPlaceholder}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
@@ -66,7 +68,7 @@ export default function CoursePresignupForm() {
         disabled={loading}
         className="bg-rose text-plum font-body text-xs tracking-widest uppercase py-3 px-8 hover:bg-cream transition-colors disabled:opacity-50"
       >
-        {loading ? "..." : "Reserve My Spot"}
+        {loading ? "..." : t.reserveButton}
       </button>
       {error && <p className="font-body text-xs text-rose/80">{error}</p>}
     </form>

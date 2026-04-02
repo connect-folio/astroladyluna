@@ -3,46 +3,24 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
-interface Session {
-  label: string;
-  title: string;
-  duration: string;
-  description: string;
-  calendlyUrl: string;
-  calendlyFirstTimer?: string;
-  isFree?: boolean;
-}
-
-const SESSIONS: Session[] = [
+const CALENDLY_URLS = [
   {
-    label: "FREE",
-    title: "Quick Connect",
-    duration: "20 minutes",
-    description:
-      "A short, focused reading to answer one burning question. Perfect if you're new to astrology or just curious.",
-    calendlyUrl: "https://calendly.com/astroladyluna-info/quick-c",
+    default: "https://calendly.com/astroladyluna-info/quick-c",
+    firstTimer: null,
     isFree: true,
   },
   {
-    label: "$111",
-    title: "Solar Return",
-    duration: "80 minutes",
-    description:
-      "A deep reading anchored in your solar return chart — what the year ahead holds for you, and how to navigate it with intention.",
-    calendlyUrl: "https://calendly.com/astroladyluna-info/solar-return",
-    calendlyFirstTimer:
-      "https://calendly.com/astroladyluna-info/solar-return-88",
+    default: "https://calendly.com/astroladyluna-info/solar-return",
+    firstTimer: "https://calendly.com/astroladyluna-info/solar-return-88",
+    isFree: false,
   },
   {
-    label: "$111",
-    title: "Birth Chart Reading",
-    duration: "80 minutes",
-    description:
-      "A comprehensive reading of your natal chart. Understand your sun, moon, rising, and the patterns that have shaped your life.",
-    calendlyUrl: "https://calendly.com/astroladyluna-info/30min",
-    calendlyFirstTimer:
-      "https://calendly.com/astroladyluna-info/birth-chart-88",
+    default: "https://calendly.com/astroladyluna-info/30min",
+    firstTimer: "https://calendly.com/astroladyluna-info/birth-chart-88",
+    isFree: false,
   },
 ];
 
@@ -55,6 +33,8 @@ export default function SessionContent() {
   const [isFirstTimer, setIsFirstTimer] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
   const scrollTargetRef = useRef<HTMLDivElement>(null);
+  const { lang } = useLanguage();
+  const t = translations[lang].session;
 
   async function handleGateSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -79,11 +59,12 @@ export default function SessionContent() {
     }
   }
 
-  function handleSelectSession(session: Session) {
+  function handleSelectSession(index: number) {
+    const entry = CALENDLY_URLS[index];
     const url =
-      !session.isFree && isFirstTimer && session.calendlyFirstTimer
-        ? session.calendlyFirstTimer
-        : session.calendlyUrl;
+      !entry.isFree && isFirstTimer && entry.firstTimer
+        ? entry.firstTimer
+        : entry.default;
     setSelectedUrl(url);
     setTimeout(() => {
       scrollTargetRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -98,22 +79,22 @@ export default function SessionContent() {
           {!emailSubmitted ? (
             <div className="border border-rose/50 p-6">
               <p className="font-body text-xs tracking-widest text-mauve uppercase mb-3">
-                First Time?
+                {t.firstTime}
               </p>
               <p className="font-body text-sm text-plum/70 mb-6 leading-relaxed">
-                Enter your name and email to unlock your first-session rate.
+                {t.firstTimeBody}
               </p>
               <form onSubmit={handleGateSubmit} className="flex flex-col gap-3">
                 <div className="grid grid-cols-2 gap-3">
                   <Input
-                    placeholder="First name"
+                    placeholder={t.firstNamePlaceholder}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="rounded-none border-plum/20 font-body text-sm"
                     required
                   />
                   <Input
-                    placeholder="Last name"
+                    placeholder={t.lastNamePlaceholder}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     className="rounded-none border-plum/20 font-body text-sm"
@@ -122,7 +103,7 @@ export default function SessionContent() {
                 </div>
                 <Input
                   type="email"
-                  placeholder="Email"
+                  placeholder={t.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-none border-plum/20 font-body text-sm"
@@ -133,20 +114,16 @@ export default function SessionContent() {
                   disabled={loading}
                   className="bg-plum text-cream font-body text-xs tracking-widest uppercase py-3 px-6 hover:bg-mauve transition-colors disabled:opacity-50"
                 >
-                  {loading ? "..." : "Unlock Discount"}
+                  {loading ? "..." : t.unlockButton}
                 </button>
               </form>
             </div>
           ) : (
             <p className="font-body text-sm tracking-wide">
               {isFirstTimer ? (
-                <span className="text-rose">
-                  First-session rate unlocked. Your price: $88.
-                </span>
+                <span className="text-rose">{t.rateUnlocked}</span>
               ) : (
-                <span className="text-mauve">
-                  Welcome back. Your sessions are below.
-                </span>
+                <span className="text-mauve">{t.welcomeBack}</span>
               )}
             </p>
           )}
@@ -156,7 +133,7 @@ export default function SessionContent() {
       {/* ── Session cards ── */}
       <div className="py-16 px-6 md:px-16">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          {SESSIONS.map((session, i) => (
+          {t.sessions.map((session, i) => (
             <motion.div
               key={session.title}
               className="border border-plum/20 p-8 flex flex-col gap-4"
@@ -166,11 +143,11 @@ export default function SessionContent() {
               transition={{ duration: 0.6, ease: "easeOut", delay: i * 0.1 }}
             >
               <span className="font-body text-xs tracking-widest text-rose uppercase">
-                {session.isFree
-                  ? "FREE"
+                {CALENDLY_URLS[i].isFree
+                  ? lang === "es" ? "GRATIS" : "FREE"
                   : isFirstTimer
                   ? "$88"
-                  : session.label}
+                  : "$111"}
               </span>
               <h3 className="font-display text-2xl text-plum">{session.title}</h3>
               <p className="font-body text-xs text-mauve tracking-wide">
@@ -180,10 +157,10 @@ export default function SessionContent() {
                 {session.description}
               </p>
               <button
-                onClick={() => handleSelectSession(session)}
+                onClick={() => handleSelectSession(i)}
                 className="font-body text-xs tracking-widest uppercase text-plum border border-plum/30 py-3 px-6 hover:bg-plum hover:text-cream transition-colors mt-auto"
               >
-                {session.isFree ? "Book Free →" : "Book Session →"}
+                {CALENDLY_URLS[i].isFree ? session.bookFree : session.bookSession}
               </button>
             </motion.div>
           ))}
@@ -198,7 +175,7 @@ export default function SessionContent() {
             width="100%"
             className="min-h-[600px] md:h-[700px]"
             frameBorder="0"
-            title="Book a session with Lady Luna"
+            title={t.iframeTitle}
           />
         </div>
       )}

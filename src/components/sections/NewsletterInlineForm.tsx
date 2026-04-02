@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
 interface Props {
   /** Visual variant: "light" = plum bg context, "dark" = cream bg context */
@@ -11,13 +13,17 @@ interface Props {
 
 export default function NewsletterInlineForm({
   variant = "dark",
-  buttonLabel = "Get My First Letter",
+  buttonLabel,
 }: Props) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [upgradeLoading, setUpgradeLoading] = useState(false);
+  const { lang } = useLanguage();
+  const t = translations[lang].newsletter;
+
+  const resolvedButtonLabel = buttonLabel ?? t.getFirstLetterButton;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,13 +38,12 @@ export default function NewsletterInlineForm({
       });
       if (!res.ok) throw new Error("Something went wrong");
 
-      // Increment issue count in localStorage for future gate logic
       const current = parseInt(localStorage.getItem("ll_issue_count") ?? "0", 10);
       localStorage.setItem("ll_issue_count", String(current + 1));
 
       setSuccess(true);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t.error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +61,6 @@ export default function NewsletterInlineForm({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        // Stripe not configured — fail gracefully
         setUpgradeLoading(false);
       }
     } catch {
@@ -74,7 +78,7 @@ export default function NewsletterInlineForm({
             isLight ? "text-lavender" : "text-mauve"
           }`}
         >
-          You&apos;re in. Your first letter is on its way.
+          {t.youreIn}
         </p>
         <button
           onClick={handleUpgrade}
@@ -85,7 +89,7 @@ export default function NewsletterInlineForm({
               : "bg-plum text-cream hover:bg-mauve"
           }`}
         >
-          {upgradeLoading ? "..." : "Continue reading — $17/month →"}
+          {upgradeLoading ? "..." : t.continueReading}
         </button>
       </div>
     );
@@ -114,7 +118,7 @@ export default function NewsletterInlineForm({
             : "bg-plum text-cream hover:bg-mauve"
         }`}
       >
-        {loading ? "..." : buttonLabel}
+        {loading ? "..." : resolvedButtonLabel}
       </button>
       {error && (
         <p className="font-body text-xs text-rose">{error}</p>

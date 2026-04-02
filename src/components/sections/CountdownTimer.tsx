@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
 const LAUNCH_DATE = new Date("2026-06-01T00:00:00Z");
 
@@ -36,6 +38,8 @@ function Unit({ value, label }: { value: number; label: string }) {
 
 export default function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(getTimeLeft());
+  const { lang } = useLanguage();
+  const t = translations[lang].countdown;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -46,10 +50,10 @@ export default function CountdownTimer() {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-sm sm:max-w-none mx-auto justify-items-center">
-      <Unit value={timeLeft.days} label="Days" />
-      <Unit value={timeLeft.hours} label="Hours" />
-      <Unit value={timeLeft.minutes} label="Min" />
-      <Unit value={timeLeft.seconds} label="Sec" />
+      <Unit value={timeLeft.days} label={t.days} />
+      <Unit value={timeLeft.hours} label={t.hours} />
+      <Unit value={timeLeft.minutes} label={t.minutes} />
+      <Unit value={timeLeft.seconds} label={t.seconds} />
     </div>
   );
 }

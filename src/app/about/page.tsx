@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 };
 
 const stripPhotos = [
-  { src: "/images/lady-luna-book.jpeg", alt: "Lady Luna with a book" },
-  { src: "/images/lady-luna-orange.jpeg", alt: "Lady Luna in studio" },
-  { src: "/images/lady-luna-yoga-2.jpeg", alt: "Lady Luna in meditation" },
+  { src: "/assets/lady-luna-book.jpeg", alt: "Lady Luna with a book" },
+  { src: "/assets/lady-luna-orange.jpeg", alt: "Lady Luna in studio" },
+  { src: "/assets/lady-luna-yoga-2.jpeg", alt: "Lady Luna in meditation" },
 ];
 
 export default function AboutPage() {
@@ -25,7 +25,7 @@ export default function AboutPage() {
         {/* Full-width portrait */}
         <div className="relative w-full h-[600px] overflow-hidden">
           <Image
-            src="/images/lady-luna-book-2.jpeg"
+            src="/assets/lady-luna-book-2.jpeg"
             alt="Lady Luna — Camila"
             fill
             className="object-cover object-top"
@@ -52,7 +52,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 gap-4 mb-16">
             <div className="relative h-72 overflow-hidden">
               <Image
-                src="/images/lady-luna-yoga.jpeg"
+                src="/assets/lady-luna-yoga.jpeg"
                 alt="Lady Luna in nature"
                 fill
                 className="object-cover object-top"
@@ -61,7 +61,7 @@ export default function AboutPage() {
             </div>
             <div className="relative h-72 overflow-hidden">
               <Image
-                src="/images/lady-luna-yoga-2.jpeg"
+                src="/assets/lady-luna-yoga-2.jpeg"
                 alt="Lady Luna meditating"
                 fill
                 className="object-cover object-top"

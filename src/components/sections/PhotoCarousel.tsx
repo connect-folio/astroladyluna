@@ -5,9 +5,9 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PHOTOS = [
-  { src: "/images/lady-luna-sunlight.jpeg", alt: "Lady Luna in golden sunlight" },
-  { src: "/images/lady-luna-green.jpeg", alt: "Lady Luna in nature" },
-  { src: "/images/lady-luna-winter.jpeg", alt: "Lady Luna in winter light" },
+  { src: "/assets/lady-luna-sunlight.jpeg", alt: "Lady Luna in golden sunlight" },
+  { src: "/assets/lady-luna-green.jpeg", alt: "Lady Luna in nature" },
+  { src: "/assets/lady-luna-winter.jpeg", alt: "Lady Luna in winter light" },
 ];
 
 export default function PhotoCarousel() {

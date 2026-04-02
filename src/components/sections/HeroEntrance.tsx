@@ -2,8 +2,13 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
 export default function HeroEntrance() {
+  const { lang } = useLanguage();
+  const t = translations[lang].hero;
+
   return (
     <div className="relative z-10 flex flex-col items-center gap-6">
       <motion.h1
@@ -20,7 +25,7 @@ export default function HeroEntrance() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
       >
-        Guía Astrológica
+        {t.tagline}
       </motion.p>
       <motion.div
         className="flex flex-col sm:flex-row items-center gap-4 mt-4"
@@ -32,13 +37,13 @@ export default function HeroEntrance() {
           href="/session"
           className="font-body text-xs tracking-widest uppercase px-8 py-3 border border-cream text-cream hover:bg-cream hover:text-plum transition-colors"
         >
-          Book a Session
+          {t.bookSession}
         </Link>
         <Link
           href="/newsletter"
           className="font-body text-xs tracking-widest uppercase px-8 py-3 text-mauve hover:text-cream transition-colors"
         >
-          Read the Letters
+          {t.readLetters}
         </Link>
       </motion.div>
     </div>
